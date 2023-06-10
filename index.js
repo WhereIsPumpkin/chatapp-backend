@@ -7,6 +7,7 @@ import {
 import connect from "./database/mongo.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { setupWebSocket } from "./websocket/websocket.js";
 
 connect();
 
@@ -25,4 +26,6 @@ app.post("/login", loginUser);
 app.post("/register", registerUser);
 app.get("/profile", getProfile);
 
-app.listen(4040);
+const server = app.listen(4040);
+
+setupWebSocket(server);
