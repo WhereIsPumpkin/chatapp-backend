@@ -1,5 +1,9 @@
 import express from "express";
-import { registerUser, getProfile } from "./controllers/user-controller.js";
+import {
+  registerUser,
+  getProfile,
+  loginUser,
+} from "./controllers/user-controller.js";
 import connect from "./database/mongo.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -17,6 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
+app.post("/login", loginUser);
 app.post("/register", registerUser);
 app.get("/profile", getProfile);
 
