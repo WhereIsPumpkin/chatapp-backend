@@ -3,6 +3,8 @@ import {
   registerUser,
   getProfile,
   loginUser,
+  recoverPass,
+  updatePass,
 } from "./controllers/user-controller.js";
 import connect from "./database/mongo.js";
 import cookieParser from "cookie-parser";
@@ -24,6 +26,10 @@ app.use(cors(corsOptions));
 
 app.post("/login", loginUser);
 app.post("/register", registerUser);
+
+app.post("/recover-password", recoverPass);
+app.post("/reset-password", updatePass);
+
 app.get("/profile", getProfile);
 
 const server = app.listen(4040);
