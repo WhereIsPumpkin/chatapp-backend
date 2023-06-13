@@ -22,6 +22,16 @@ export const setupWebSocket = (server) => {
             const { userId, username } = userData;
             connection.userId = userId;
             connection.username = username;
+            [...wss.clients].forEach((client) => {
+              client.send(
+                JSON.stringify({
+                  online: [...wss.clients].map((c) => ({
+                    userId: c.userId,
+                    username: c.username,
+                  })),
+                })
+              );
+            });
           });
         }
       }
