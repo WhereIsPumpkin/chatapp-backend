@@ -32,6 +32,6 @@ app.post("/reset-password", updatePass);
 
 app.get("/profile", getProfile);
 
-const server = app.listen(4040);
+const server = app.listen(5050);
 
 setupWebSocket(server);

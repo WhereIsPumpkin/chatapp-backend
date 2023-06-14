@@ -1,5 +1,6 @@
 import WebSocket, { WebSocketServer } from "ws";
 import dotenv from "dotenv";
+import Message from "../models/Message.js";
 import jwt from "jsonwebtoken";
 dotenv.config();
 
@@ -9,6 +10,7 @@ export const setupWebSocket = (server) => {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (connection, req) => {
+    // read username and id from the cookie for this connection
     const cookies = req.headers.cookie;
     if (cookies) {
       const tokenCookieString = cookies
@@ -36,5 +38,28 @@ export const setupWebSocket = (server) => {
         }
       }
     }
+    connection.on("message", async (message, isBinary) => {
+      const messageData = JSON.parse(message.toString());
+      const { recipient, text } = messageData;
+      if (recipient && text) {
+        const MessageDoc = await Message.create({
+          sender: connection.userId,
+          recipient,
+          text,
+        });
+        [...wss.clients]
+          .filter((c) => c.userId === recipient)
+          .forEach((c) =>
+            c.send(
+              JSON.stringify({
+                text,
+                sender: connection.userId,
+                recipient,
+                id: MessageDoc._id,
+              })
+            )
+          );
+      }
+    });
   });
 };
