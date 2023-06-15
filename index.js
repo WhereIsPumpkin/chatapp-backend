@@ -5,6 +5,8 @@ import {
   loginUser,
   recoverPass,
   updatePass,
+  getAllUser,
+  logOut,
 } from "./controllers/user-controller.js";
 import { updateMessage } from "./controllers/messages-controller.js";
 import connect from "./database/mongo.js";
@@ -27,12 +29,14 @@ app.use(cors(corsOptions));
 
 app.post("/login", loginUser);
 app.post("/register", registerUser);
+app.post("/logout", logOut);
 
 app.post("/recover-password", recoverPass);
 app.post("/reset-password", updatePass);
 
 app.get("/profile", getProfile);
 app.get("/messages/:userId", updateMessage);
+app.get("/people", getAllUser);
 
 const port = process.env.PORT || 5050;
 const server = app.listen(port, "0.0.0.0", function () {

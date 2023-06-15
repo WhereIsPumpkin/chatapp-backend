@@ -214,3 +214,12 @@ export async function getProfile(req, res) {
     res.status(401).json("no token");
   }
 }
+
+export async function getAllUser(req, res) {
+  const users = await User.find({}, { _id: 1, username: 1 });
+  res.json(users);
+}
+
+export async function logOut(req, res) {
+  res.cookie("token", "", { sameSite: "none", secure: true }).json("ok");
+}

@@ -10,6 +10,36 @@ export const setupWebSocket = (server) => {
   const wss = new WebSocketServer({ server });
 
   wss.on("connection", (connection, req) => {
+    function notifyAboutOnlinePeople() {
+      [...wss.clients].forEach((client) => {
+        client.send(
+          JSON.stringify({
+            online: [...wss.clients].map((c) => ({
+              userId: c.userId,
+              username: c.username,
+            })),
+          })
+        );
+      });
+    }
+
+    connection.isAlive = true;
+
+    connection.timer = setInterval(() => {
+      connection.ping();
+      connection.deathTimer = setTimeout(() => {
+        connection.isAlive = false;
+        clearInterval(connection.timer);
+        connection.terminate();
+        notifyAboutOnlinePeople();
+        console.log("dead");
+      }, 1000);
+    }, 5000);
+
+    connection.on("pong", () => {
+      clearTimeout(connection.deathTimer);
+    });
+
     // read username and id from the cookie for this connection
     const cookies = req.headers.cookie;
     if (cookies) {
@@ -61,5 +91,10 @@ export const setupWebSocket = (server) => {
           );
       }
     });
+    notifyAboutOnlinePeople();
+  });
+
+  wss.on("close", (data) => {
+    console.log("data");
   });
 };
