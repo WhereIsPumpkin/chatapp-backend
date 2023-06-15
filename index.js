@@ -6,6 +6,7 @@ import {
   recoverPass,
   updatePass,
 } from "./controllers/user-controller.js";
+import { updateMessage } from "./controllers/messages-controller.js";
 import connect from "./database/mongo.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -31,6 +32,7 @@ app.post("/recover-password", recoverPass);
 app.post("/reset-password", updatePass);
 
 app.get("/profile", getProfile);
+app.get("./messages/:userId", updateMessage);
 
 const server = app.listen(5050);
 
