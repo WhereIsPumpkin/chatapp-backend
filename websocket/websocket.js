@@ -55,7 +55,7 @@ export const setupWebSocket = (server) => {
                 text,
                 sender: connection.userId,
                 recipient,
-                id: MessageDoc._id,
+                _id: MessageDoc._id,
               })
             )
           );

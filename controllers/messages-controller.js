@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import Message from "../models/Message.js";
+import jwt from "jsonwebtoken";
 dotenv.config();
 const jwtSecret = process.env.JWT_SECRET;
 

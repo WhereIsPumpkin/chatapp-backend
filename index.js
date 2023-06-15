@@ -32,8 +32,11 @@ app.post("/recover-password", recoverPass);
 app.post("/reset-password", updatePass);
 
 app.get("/profile", getProfile);
-app.get("./messages/:userId", updateMessage);
+app.get("/messages/:userId", updateMessage);
 
-const server = app.listen(5050);
+const port = process.env.PORT || 5050;
+const server = app.listen(port, "0.0.0.0", function () {
+  console.log(`Server is running on ${port}`);
+});
 
 setupWebSocket(server);
