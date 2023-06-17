@@ -11,6 +11,7 @@ const messageSchema = new Schema(
       ref: "User",
     },
     text: String,
+    file: String,
   },
   { timestamps: true }
 );

@@ -38,9 +38,11 @@ export async function loginUser(req, res) {
 }
 
 export async function registerUser(req, res) {
-  const { username, password, email } = req.body;
-
   try {
+    const { username, password, email } = req.body;
+    const { file } = req;
+    console.log(file);
+
     const hashedPassowrd = bycript.hashSync(password, bycriptSalt);
 
     const createdUser = await User.create({
@@ -48,9 +50,13 @@ export async function registerUser(req, res) {
       email,
       password: hashedPassowrd,
       verified: false,
+      avatar: "avatars/" + file.originalname,
     });
+
+    const avatar = createdUser.avatar;
+
     jwt.sign(
-      { userId: createdUser._id, username },
+      { userId: createdUser._id, username, avatar },
       jwtSecret,
       {},
       (err, token) => {

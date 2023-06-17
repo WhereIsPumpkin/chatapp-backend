@@ -2,6 +2,8 @@ import WebSocket, { WebSocketServer } from "ws";
 import dotenv from "dotenv";
 import Message from "../models/Message.js";
 import jwt from "jsonwebtoken";
+import fs from "fs";
+import { fileURLToPath } from "url";
 dotenv.config();
 
 const jwtSecret = process.env.JWT_SECRET;
@@ -70,12 +72,27 @@ export const setupWebSocket = (server) => {
     }
     connection.on("message", async (message, isBinary) => {
       const messageData = JSON.parse(message.toString());
-      const { recipient, text } = messageData;
-      if (recipient && text) {
+      const { recipient, text, file } = messageData;
+      let filename = null;
+      if (file) {
+        console.log("size", file.data.length);
+        const parts = file.name.split(".");
+        const ext = parts[parts.length - 1];
+        filename = Date.now() + "." + ext;
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = fileURLToPath(new URL("..", import.meta.url));
+        const path = __dirname + "/public/uploads/" + filename;
+        const bufferData = Buffer.from(file.data.split(",")[1], "base64");
+        fs.writeFile(path, bufferData, () => {
+          console.log("file saved:" + path);
+        });
+      }
+      if (recipient && (text || file)) {
         const MessageDoc = await Message.create({
           sender: connection.userId,
           recipient,
           text,
+          file: file ? filename : null,
         });
         [...wss.clients]
           .filter((c) => c.userId === recipient)
@@ -85,6 +102,7 @@ export const setupWebSocket = (server) => {
                 text,
                 sender: connection.userId,
                 recipient,
+                file: file ? filename : null,
                 _id: MessageDoc._id,
               })
             )

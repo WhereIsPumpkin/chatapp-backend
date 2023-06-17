@@ -5,9 +5,8 @@ const userSchema = new Schema(
     email: { type: Schema.Types.String, required: true, unique: true },
     username: { type: Schema.Types.String, required: true, unique: true },
     password: { type: Schema.Types.String, required: true },
-    verified: {
-      type: Schema.Types.Boolean,
-    },
+    avatar: { type: Schema.Types.String, required: false },
+    verified: { type: Schema.Types.Boolean, required: false },
   },
   { timestamps: true }
 );
