@@ -19,6 +19,7 @@ export const setupWebSocket = (server) => {
             online: [...wss.clients].map((c) => ({
               userId: c.userId,
               username: c.username,
+              avatar: c.avatar,
             })),
           })
         );
@@ -52,16 +53,19 @@ export const setupWebSocket = (server) => {
         const token = tokenCookieString.split("=")[1];
         if (token) {
           jwt.verify(token, jwtSecret, {}, (err, userData) => {
+            console.log(userData);
             if (err) throw err;
-            const { userId, username } = userData;
+            const { userId, username, avatar } = userData;
             connection.userId = userId;
             connection.username = username;
+            connection.avatar = avatar;
             [...wss.clients].forEach((client) => {
               client.send(
                 JSON.stringify({
                   online: [...wss.clients].map((c) => ({
                     userId: c.userId,
                     username: c.username,
+                    avatar: c.avatar,
                   })),
                 })
               );

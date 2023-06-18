@@ -19,12 +19,14 @@ let transporter = nodemailer.createTransport({
 
 export async function loginUser(req, res) {
   const { username, password } = req.body;
+
   const foundUser = await User.findOne({ username });
   if (foundUser) {
     const passOk = bycript.compareSync(password, foundUser.password);
     if (passOk) {
+      const avatar = foundUser.avatar;
       jwt.sign(
-        { userId: foundUser._id, username },
+        { userId: foundUser._id, username, avatar },
         jwtSecret,
         {},
         (err, token) => {
@@ -222,7 +224,7 @@ export async function getProfile(req, res) {
 }
 
 export async function getAllUser(req, res) {
-  const users = await User.find({}, { _id: 1, username: 1 });
+  const users = await User.find({}, { _id: 1, username: 1, avatar: 1 });
   res.json(users);
 }
 
