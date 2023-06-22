@@ -35,7 +35,11 @@ export async function loginUser(req, res) {
           });
         }
       );
+    } else {
+      res.status(401).json({ message: "Invalid password" });
     }
+  } else {
+    res.status(404).json({ message: "User not found" });
   }
 }
 

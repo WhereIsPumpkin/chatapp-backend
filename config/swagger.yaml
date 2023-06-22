@@ -1,0 +1,182 @@
+openapi: 3.0.0
+info:
+  title: ConnectChat API 💬
+  description: ConnectChat API is a professional and reliable platform that serves real-time chat applications. With its advanced technology and robust features, it provides seamless communication solutions for businesses and individuals alike. Experience the power of efficient and effective communication. 💬💬
+  version: 1.0.0
+
+servers:
+  - url: https://chatapp-backend-production-9079.up.railway.app
+    description: production server
+  - url: http://localhost:5050
+    description: local server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        This security scheme defines a bearer token authentication method using
+        JSON Web Tokens (JWT). To use this method, the user must include a valid
+        JWT in the request headers.
+paths:
+  /register:
+    post:
+      tags:
+        - Users
+      summary: Register a new user
+      description: >
+        This route is used to register a new user. The user must provide their
+        `username`, `password`, `email`, and an optional profile picture file in
+        the request body as multipart/form-data. If the registration is successful,
+        the server will return a `201` response.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                email:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: User registered successfully
+  /login:
+    post:
+      tags:
+        - Users
+      summary: Log in a user
+      description: >
+        This route is used to log in a user. The user must provide their `username`
+        and `password` in the request body as JSON. If the login is successful,
+        the server will return a `200` response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  exmaple: johndoe
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: User logged in successfully
+  /recover-password:
+    post:
+      tags:
+        - Users
+      summary: Recover a user's password
+      description: >
+        This route is used to recover a user's password. The user must provide their `email` in the request body as JSON. If the email is valid, the server will send an email to the provided address with instructions on how to reset their password and return a `200` response.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  exmaple: johndoe@gmail.com
+      responses:
+        "200":
+          description: Email sent. Please check your inbox.
+        "400":
+          description: Bad request or error occured
+  /update-pass:
+    post:
+      tags:
+        - Users
+      summary: Update a user's password
+      description: >
+        This route is used to update a user's password. The user must provide their
+        new `password` and a valid `token` in the request body as JSON. If the token
+        is valid and not expired, the server will update the user's password and
+        return a `200` response. If the token is invalid or expired, the server will
+        return a `400` error with the message `"Invalid or expired token"`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: newPassword123
+                token:
+                  type: string
+                  example: 8f7d9a5c1e2b3c4d5e6f
+      responses:
+        "200":
+          description: Password updated successfully
+        "400":
+          description: Invalid or expired token
+  /profile:
+    get:
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      summary: Retrieve user profile data
+      description: >
+        This route is used to retrieve user profile data. It accepts cookies and
+        attempts to retrieve a token from them. If a token is present, it is
+        verified using the jwt.verify method. If the verification is successful,
+        the server will return a JSON object containing the user's `username` and
+        `email`. If no token is provided or if the verification fails, the server
+        will return a `401` error with the message `"no token"`.
+      responses:
+        "200":
+          description: User profile data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                  email:
+                    type: string
+        "401":
+          description: No token provided
+  /messages/{userId}:
+    get:
+      tags:
+        - Messages
+      summary: Retrieve messages between two users
+      description: >
+        Retrieve all messages between the authenticated user and another user specified by the userId parameter.
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: The ID of the user to retrieve messages with.
+          schema:
+            type: string
+      responses:
+        200:
+          description: A list of messages between the two users.
+  /people:
+    get:
+      tags:
+        - Users
+      summary: Retrieve all users
+      description: >
+        Retrieve a list of all users with their `_id`, `username`, and `avatar` fields.
+      responses:
+        200:
+          description: A list of all users.

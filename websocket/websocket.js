@@ -13,16 +13,16 @@ export const setupWebSocket = (server) => {
 
   wss.on("connection", (connection, req) => {
     function notifyAboutOnlinePeople() {
+      const onlineUsers = [...wss.clients]
+        .filter((c) => c.userId)
+        .map((c) => ({
+          userId: c.userId,
+          username: c.username,
+          avatar: c.avatar,
+        }));
+
       [...wss.clients].forEach((client) => {
-        client.send(
-          JSON.stringify({
-            online: [...wss.clients].map((c) => ({
-              userId: c.userId,
-              username: c.username,
-              avatar: c.avatar,
-            })),
-          })
-        );
+        client.send(JSON.stringify({ online: onlineUsers }));
       });
     }
 
@@ -53,7 +53,6 @@ export const setupWebSocket = (server) => {
         const token = tokenCookieString.split("=")[1];
         if (token) {
           jwt.verify(token, jwtSecret, {}, (err, userData) => {
-            console.log(userData);
             if (err) throw err;
             const { userId, username, avatar } = userData;
             connection.userId = userId;
@@ -79,7 +78,6 @@ export const setupWebSocket = (server) => {
       const { recipient, text, file } = messageData;
       let filename = null;
       if (file) {
-        console.log("size", file.data.length);
         const parts = file.name.split(".");
         const ext = parts[parts.length - 1];
         filename = Date.now() + "." + ext;
@@ -114,9 +112,5 @@ export const setupWebSocket = (server) => {
       }
     });
     notifyAboutOnlinePeople();
-  });
-
-  wss.on("close", (data) => {
-    console.log("data");
   });
 };

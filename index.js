@@ -14,11 +14,15 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
 import { setupWebSocket } from "./websocket/websocket.js";
+import swaggerMiddleware from "./swagger-middleware.js";
 
 connect();
 
 let corsOptions = {
-  origin: "http://localhost:5173",
+  origin: [
+    "http://localhost:5050",
+    "https://chatapp-backend-production-9079.up.railway.app",
+  ],
   credentials: true,
 };
 
@@ -65,6 +69,8 @@ app.post("/reset-password", updatePass);
 app.get("/profile", getProfile);
 app.get("/messages/:userId", updateMessage);
 app.get("/people", getAllUser);
+
+app.use("/", ...swaggerMiddleware);
 
 const port = process.env.PORT || 5050;
 const server = app.listen(port, "0.0.0.0", function () {
