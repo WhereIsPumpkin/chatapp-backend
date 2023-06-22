@@ -19,10 +19,7 @@ import swaggerMiddleware from "./swagger-middleware.js";
 connect();
 
 let corsOptions = {
-  origin: [
-    "http://localhost:5050",
-    "https://chatapp-backend-production-9079.up.railway.app",
-  ],
+  origin: "https://chatapp-backend-production-9079.up.railway.app,
   credentials: true,
 };
 
