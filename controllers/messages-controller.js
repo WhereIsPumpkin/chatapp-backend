@@ -9,22 +9,26 @@ async function getUserDataFromRequest(req) {
     const token = req.cookies?.token;
     if (token) {
       jwt.verify(token, jwtSecret, {}, (err, userData) => {
-        if (err) throw err;
-        resolve(userData);
+        if (err) reject(err); // reject instead of throw
+        else resolve(userData);
       });
     } else {
-      reject("no token");
+      reject(new Error("No token in request."));
     }
   });
 }
 
 export async function updateMessage(req, res) {
   const { userId } = req.params;
-  const userData = await getUserDataFromRequest(req);
-  const ourUserId = userData.userId;
-  const messages = await Message.find({
-    sender: { $in: [userId, ourUserId] },
-    recipient: { $in: [userId, ourUserId] },
-  }).sort({ createdAt: 1 });
-  res.json(messages);
+  try {
+    const userData = await getUserDataFromRequest(req);
+    const ourUserId = userData.userId;
+    const messages = await Message.find({
+      sender: { $in: [userId, ourUserId] },
+      recipient: { $in: [userId, ourUserId] },
+    }).sort({ createdAt: 1 });
+    res.json(messages);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
 }

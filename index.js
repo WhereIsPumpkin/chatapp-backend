@@ -19,10 +19,7 @@ import swaggerMiddleware from "./swagger-middleware.js";
 connect();
 
 let corsOptions = {
-  origin: [
-    "https://chatapp-backend-production-9079.up.railway.app",
-    "https://connectchat0.netlify.app",
-  ],
+  origin: ["http://localhost:5173", "https://connectchat0.netlify.app"],
   credentials: true,
 };
 
